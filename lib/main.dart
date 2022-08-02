@@ -1,5 +1,7 @@
 // User interface
 import 'package:flutter/material.dart';
+// Widgets
+import 'map.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,13 +15,7 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Life Saver',
-      home: Scaffold(
-        body: Center(
-          child: Text(
-            'Life Saver',
-          ),
-        ),
-      ),
+      home: Map(),
     );
   }
 }
