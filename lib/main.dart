@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'home.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const LifeSaver());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class LifeSaver extends StatelessWidget {
+  const LifeSaver({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

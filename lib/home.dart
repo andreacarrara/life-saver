@@ -20,15 +20,15 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   Completer<GoogleMapController> _mapController = Completer();
-  CameraPosition? _initialCameraPosition; // To be set later
+  Position? _initialPosition; // To be set later
 
   @override
   void initState() {
     super.initState();
-    _setInitiaPosition();
+    _setInitialPosition();
   }
 
-  Future<void> _setInitiaPosition() async {
+  Future<void> _setInitialPosition() async {
     // Request location permission
     LocationPermission permission = await Geolocator.requestPermission();
     // If location permission has been granted
@@ -37,13 +37,7 @@ class _HomeState extends State<Home> {
       Position initialPosition = await Geolocator.getCurrentPosition();
       // Set initial position
       setState(() {
-        _initialCameraPosition = CameraPosition(
-          target: LatLng(
-            initialPosition.latitude,
-            initialPosition.longitude,
-          ),
-          zoom: 16,
-        );
+        _initialPosition = initialPosition;
       });
     }
   }
@@ -59,7 +53,7 @@ class _HomeState extends State<Home> {
   Future<void> _goToCurrentPosition() async {
     // Get current position
     Position currentPosition = await Geolocator.getCurrentPosition();
-    // Animate map to current position
+    // Animate camera to current position
     GoogleMapController mapController = await _mapController.future;
     mapController.animateCamera(
       CameraUpdate.newCameraPosition(
@@ -77,7 +71,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     // If location permission has not been granted
-    if (_initialCameraPosition == null) {
+    if (_initialPosition == null) {
       return Scaffold(
         body: Center(
           child: Text(
@@ -93,7 +87,7 @@ class _HomeState extends State<Home> {
           // Map
           Map(
             onMapCreated: _onMapCreated,
-            initialCameraPosition: _initialCameraPosition!,
+            initialPosition: _initialPosition!,
           ),
           // Info button
           Positioned(

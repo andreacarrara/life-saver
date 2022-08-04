@@ -11,8 +11,12 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  google_maps_flutter: ^2.1.10
+  
   geolocator: ^9.0.1
+  google_maps_flutter: ^2.1.10
+  firebase_core: ^1.20.0
+  cloud_firestore: ^3.4.3
+  geoflutterfire: ^3.0.2
 
 dev_dependencies:
   flutter_test:
