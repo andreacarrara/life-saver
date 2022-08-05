@@ -8,7 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// Geo queries
+// Geoqueries
 import 'package:geoflutterfire/geoflutterfire.dart';
 
 class Map extends StatefulWidget {
@@ -27,7 +27,7 @@ class Map extends StatefulWidget {
 
 class _MapState extends State<Map> {
   Stream<List<DocumentSnapshot>>? _markersStream; // To be set later
-  int _maxMarkers = 20; // Maximum number of markers to display
+  int _maxMarkers = 10; // Maximum number of markers to display
   double _radius = 5; // Radius of geo query in kilometers
 
   @override

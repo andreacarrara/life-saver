@@ -12,7 +12,10 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   
+  google_fonts: ^3.0.1
+  modal_bottom_sheet: ^2.1.0
   geolocator: ^9.0.1
+  geocoding: ^2.0.4
   google_maps_flutter: ^2.1.10
   firebase_core: ^1.20.0
   cloud_firestore: ^3.4.3

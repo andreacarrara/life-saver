@@ -1,6 +1,8 @@
 // User interface
 import 'package:flutter/material.dart';
-// Widgets
+import 'package:google_fonts/google_fonts.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+// Home
 import 'home.dart';
 
 void main() {
@@ -12,10 +14,15 @@ class LifeSaver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
+    return MaterialApp(
       title: 'Life Saver',
-      home: Home(),
+      theme: ThemeData(
+        textTheme: GoogleFonts.interTextTheme(),
+      ),
+      onGenerateRoute: (RouteSettings settings) => MaterialWithModalsPageRoute(
+        builder: (BuildContext context) => Home(),
+      ),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

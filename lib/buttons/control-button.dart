@@ -14,9 +14,10 @@ class ControlButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      heroTag: UniqueKey(),
       onPressed: onPressed,
-      foregroundColor: Colors.black,
       backgroundColor: Colors.white,
+      foregroundColor: Colors.black87,
       splashColor: Colors.transparent,
       mini: true,
       shape: RoundedRectangleBorder(

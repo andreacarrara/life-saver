@@ -4,12 +4,13 @@ import 'package:flutter/cupertino.dart';
 // Location services
 import 'package:geolocator/geolocator.dart';
 // Map
+import 'map.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-// Widgets
-import 'map.dart';
-import 'control-button.dart';
+// Buttons
+import 'buttons/control-button.dart';
+import 'buttons/add-button.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -107,6 +108,14 @@ class _HomeState extends State<Home> {
               icon: CupertinoIcons.location_circle_fill,
             ),
           ),
+          // Add button
+          Positioned(
+            bottom: 25,
+            right: 20,
+            child: AddButton(
+              onPressed: _goToCurrentPosition,
+            ),
+          )
         ],
       ),
     );
