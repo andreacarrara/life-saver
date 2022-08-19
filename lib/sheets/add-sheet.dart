@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 // Location services
 import 'package:geolocator/geolocator.dart';
+// Geocoding
+import 'package:geocoding/geocoding.dart';
 // Firebase Firestore
 import 'package:cloud_firestore/cloud_firestore.dart';
 // Geoqueries
@@ -11,15 +13,48 @@ import 'package:geoflutterfire/geoflutterfire.dart';
 // Buttons
 import '../buttons/action-button.dart';
 
-class AddSheet extends StatelessWidget {
+class AddSheet extends StatefulWidget {
   final Position currentPosition;
-  final String currentAddress;
 
-  const AddSheet({
+  AddSheet({
     Key? key,
     required this.currentPosition,
-    required this.currentAddress,
   }) : super(key: key);
+
+  @override
+  State<AddSheet> createState() => _AddSheetState();
+}
+
+class _AddSheetState extends State<AddSheet> {
+  String _currentAddress = 'Loading...';
+
+  @override
+  void initState() {
+    super.initState();
+    _setCurrentAddress();
+  }
+
+  Future<void> _setCurrentAddress() async {
+    // Get list of current placemarks
+    List<Placemark> currentPlacemarks = await placemarkFromCoordinates(
+      widget.currentPosition.latitude,
+      widget.currentPosition.longitude,
+    );
+    // Get nearest current placemark
+    Placemark currentPlacemark = currentPlacemarks[0];
+    // Compute current address
+    String currentAddress = 'Middle of nowhere';
+    if (currentPlacemark.street!.isNotEmpty)
+      currentAddress = currentPlacemark.street!;
+    if (currentPlacemark.locality!.isNotEmpty)
+      currentAddress += ', ' + currentPlacemark.locality!;
+    if (currentPlacemark.postalCode!.isNotEmpty)
+      currentAddress += ' ' + currentPlacemark.postalCode!;
+    // Set current address
+    setState(() {
+      _currentAddress = currentAddress;
+    });
+  }
 
   void closeSheet(BuildContext context) {
     Navigator.of(context).pop();
@@ -31,14 +66,16 @@ class AddSheet extends StatelessWidget {
   }
 
   Future<void> addMarker() async {
+    // If it is still loading, return
+    if (_currentAddress == 'Loading...') return;
     // Initialize Firestore
     final firestore = FirebaseFirestore.instance;
     // Intiialiaze GeoFlutterFire
     final geoflutterfire = Geoflutterfire();
     // Add marker
     GeoFirePoint defibrillator = geoflutterfire.point(
-      latitude: currentPosition.latitude,
-      longitude: currentPosition.longitude,
+      latitude: widget.currentPosition.latitude,
+      longitude: widget.currentPosition.longitude,
     );
     firestore.collection('defibrillators').add({
       'position': defibrillator.data,
@@ -48,6 +85,9 @@ class AddSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Compute padding
+    double bottomPadding = MediaQuery.of(context).viewPadding.bottom / 2;
+
     return Material(
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -86,8 +126,8 @@ class AddSheet extends StatelessWidget {
                   style: GoogleFonts.inter(
                     textStyle: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey.shade400,
                       fontWeight: FontWeight.w800,
+                      color: Colors.grey.shade400,
                     ),
                   ),
                 ),
@@ -100,7 +140,7 @@ class AddSheet extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(left: 6),
               child: Text(
-                currentAddress,
+                _currentAddress,
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.inter(
                   textStyle: TextStyle(
@@ -111,7 +151,7 @@ class AddSheet extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 46,
+              height: 42,
             ),
             // Buttons
             Row(
@@ -140,7 +180,7 @@ class AddSheet extends StatelessWidget {
               ],
             ),
             SizedBox(
-              height: 42,
+              height: 44 + bottomPadding,
             ),
           ],
         ),

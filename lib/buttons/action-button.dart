@@ -37,8 +37,8 @@ class ActionButton extends StatelessWidget {
           style: GoogleFonts.inter(
             textStyle: TextStyle(
               fontSize: 18,
-              color: textColor,
               fontWeight: FontWeight.w800,
+              color: textColor,
             ),
           ),
         ),

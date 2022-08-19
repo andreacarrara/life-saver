@@ -4,50 +4,28 @@ import 'package:flutter/cupertino.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 // Location services
 import 'package:geolocator/geolocator.dart';
-// Geocoding
-import 'package:geocoding/geocoding.dart';
 // Sheets
 import '../sheets/add-sheet.dart';
 
 class AddButton extends StatelessWidget {
-  final Function() onPressed;
+  final Function(Position) onPressed;
 
   const AddButton({
     Key? key,
     required this.onPressed,
   }) : super(key: key);
 
-  Future<String> getCurrentAddress(Position currentPosition) async {
-    // Get current placemark
-    List<Placemark> currentPlacemarks = await placemarkFromCoordinates(
-      currentPosition.latitude,
-      currentPosition.longitude,
-    );
-    Placemark currentPlacemark = currentPlacemarks[0];
-    // Return current address
-    if (currentPlacemark.street!.isEmpty) return 'Middle of nowhere';
-    String currentAddress = currentPlacemark.street!;
-    if (currentPlacemark.locality!.isEmpty) return currentAddress;
-    currentAddress += ', ' + currentPlacemark.locality!;
-    if (currentPlacemark.postalCode!.isEmpty) return currentAddress;
-    currentAddress += ' ' + currentPlacemark.postalCode!;
-    return currentAddress;
-  }
-
   Future<void> addPressed(BuildContext context) async {
-    // Go to current position
-    onPressed();
     // Get current position
     Position currentPosition = await Geolocator.getCurrentPosition();
-    // Get current address
-    String currentAddress = await getCurrentAddress(currentPosition);
+    // Animate to current position
+    onPressed(currentPosition);
     // Show add sheet
     showCupertinoModalBottomSheet(
       context: context,
       topRadius: Radius.circular(10),
       builder: (BuildContext context) => AddSheet(
         currentPosition: currentPosition,
-        currentAddress: currentAddress,
       ),
     );
   }

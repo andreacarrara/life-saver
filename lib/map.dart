@@ -28,7 +28,7 @@ class Map extends StatefulWidget {
 class _MapState extends State<Map> {
   Stream<List<DocumentSnapshot>>? _markersStream; // To be set later
   int _maxMarkers = 10; // Maximum number of markers to display
-  double _radius = 5; // Radius of geo query in kilometers
+  double _radius = 5; // Radius of geoquery in kilometers
 
   @override
   void initState() {
@@ -137,11 +137,11 @@ class _MapState extends State<Map> {
             zoom: 16,
           ),
           markers: markers,
+          myLocationEnabled: true,
           minMaxZoomPreference: MinMaxZoomPreference(10, null),
           myLocationButtonEnabled: false,
           zoomControlsEnabled: false,
           mapToolbarEnabled: false,
-          myLocationEnabled: true,
           compassEnabled: false,
         );
       },
