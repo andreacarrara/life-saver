@@ -52,11 +52,18 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   }
 
   Future<void> _myLocationPressed() async {
+    // Get current position
+    Position currentPosition = await Geolocator.getCurrentPosition();
     // Animate to current position
-    _animateToPosition(await Geolocator.getCurrentPosition());
+    _animateToLatLng(
+      LatLng(
+        currentPosition.latitude,
+        currentPosition.longitude,
+      ),
+    );
   }
 
-  Future<void> _animateToPosition(Position position) async {
+  Future<void> _animateToLatLng(LatLng latLng) async {
     // Get map center
     LatLng mapCenter = await _getMapCenter();
     // Get map zoom
@@ -64,11 +71,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     // Initiliaze tweens
     Tween<double> latTween = Tween<double>(
       begin: mapCenter.latitude,
-      end: position.latitude,
+      end: latLng.latitude,
     );
     Tween<double> lngTween = Tween<double>(
       begin: mapCenter.longitude,
-      end: position.longitude,
+      end: latLng.longitude,
     );
     Tween<double> zoomTween = Tween<double>(
       begin: mapZoom,
@@ -76,7 +83,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
     // Initiliaze animation controller
     AnimationController animationController = AnimationController(
-      duration: Duration(milliseconds: 500),
+      duration: Duration(seconds: 1),
       vsync: this,
     );
     // Initiliaze animation
@@ -163,8 +170,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           children: <Widget>[
             // Map
             Map(
-              onMapCreated: _onMapCreated,
               initialPosition: _initialPosition!,
+              onMapCreated: _onMapCreated,
+              onMarkerTapped: _animateToLatLng,
             ),
             // Info button
             Positioned(
@@ -189,7 +197,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               bottom: 20 + bottomPadding,
               right: 20,
               child: AddButton(
-                onPressed: _animateToPosition,
+                onPressed: _animateToLatLng,
               ),
             )
           ],

@@ -11,7 +11,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // Geoqueries
 import 'package:geoflutterfire/geoflutterfire.dart';
 // Buttons
-import '../buttons/action-button.dart';
+import '/buttons/action-button.dart';
 
 class AddSheet extends StatefulWidget {
   final Position currentPosition;
@@ -26,7 +26,7 @@ class AddSheet extends StatefulWidget {
 }
 
 class _AddSheetState extends State<AddSheet> {
-  String _currentAddress = 'Loading...';
+  String _currentAddress = 'Loading...'; // To be set later
 
   @override
   void initState() {

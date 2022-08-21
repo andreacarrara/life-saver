@@ -1,5 +1,6 @@
 // User interface
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 // Location services
 import 'package:geolocator/geolocator.dart';
 // Map
@@ -10,15 +11,19 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // Geoqueries
 import 'package:geoflutterfire/geoflutterfire.dart';
+// Sheets
+import 'sheets/marker_sheet.dart';
 
 class Map extends StatefulWidget {
-  final Function(GoogleMapController) onMapCreated;
   final Position initialPosition;
+  final Function(GoogleMapController) onMapCreated;
+  final Function(LatLng) onMarkerTapped;
 
   const Map({
     Key? key,
-    required this.onMapCreated,
     required this.initialPosition,
+    required this.onMapCreated,
+    required this.onMarkerTapped,
   }) : super(key: key);
 
   @override
@@ -64,36 +69,53 @@ class _MapState extends State<Map> {
 
   List<DocumentSnapshot> _getDocuments(List<DocumentSnapshot> documents) {
     // Sort documents by distance
-    documents.sort(
-      (a, b) {
-        GeoFirePoint center = GeoFirePoint(
-          widget.initialPosition.latitude,
-          widget.initialPosition.longitude,
-        );
-        // Read locations
-        GeoPoint geoPointA = a.get('position')['geopoint'];
-        GeoPoint geoPointB = b.get('position')['geopoint'];
-        // Compare distances
-        return center
-            .distance(
-              lat: geoPointA.latitude,
-              lng: geoPointA.longitude,
-            )
-            .compareTo(
-              center.distance(
-                lat: geoPointB.latitude,
-                lng: geoPointB.longitude,
-              ),
-            );
-      },
-    );
+    documents.sort((a, b) {
+      GeoFirePoint center = GeoFirePoint(
+        widget.initialPosition.latitude,
+        widget.initialPosition.longitude,
+      );
+      // Read locations
+      GeoPoint geoPointA = a.get('position')['geopoint'];
+      GeoPoint geoPointB = b.get('position')['geopoint'];
+      // Compare distances
+      return center
+          .distance(
+            lat: geoPointA.latitude,
+            lng: geoPointA.longitude,
+          )
+          .compareTo(
+            center.distance(
+              lat: geoPointB.latitude,
+              lng: geoPointB.longitude,
+            ),
+          );
+    });
     // Truncate number of documents
     int numDocuments = documents.length;
-    if (numDocuments > _maxMarkers) {
+    if (numDocuments > _maxMarkers)
       documents.removeRange(_maxMarkers, numDocuments);
-    }
     // Return list of documents
     return documents;
+  }
+
+  void _onMarkerTapped(BuildContext context, DocumentSnapshot document) {
+    // Read marker location
+    GeoPoint geoPoint = document.get('position')['geopoint'];
+    // Animate to marker location
+    widget.onMarkerTapped(
+      LatLng(
+        geoPoint.latitude,
+        geoPoint.longitude,
+      ),
+    );
+    // Open marker sheet
+    showCupertinoModalBottomSheet(
+      context: context,
+      topRadius: Radius.circular(10),
+      builder: (BuildContext context) => MarkerSheet(
+        document: document,
+      ),
+    );
   }
 
   @override
@@ -112,7 +134,7 @@ class _MapState extends State<Map> {
           List<DocumentSnapshot> documents = _getDocuments(snapshot.data!);
           // Read list of documents
           for (DocumentSnapshot document in documents) {
-            // Read location
+            // Read marker location
             GeoPoint geoPoint = document.get('position')['geopoint'];
             // Add marker to set
             markers.add(
@@ -122,6 +144,9 @@ class _MapState extends State<Map> {
                   geoPoint.latitude,
                   geoPoint.longitude,
                 ),
+                onTap: () => _onMarkerTapped(context, document),
+                // Disable default animation
+                consumeTapEvents: true,
               ),
             );
           }

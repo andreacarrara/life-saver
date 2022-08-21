@@ -4,11 +4,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 // Location services
 import 'package:geolocator/geolocator.dart';
+// Map
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 // Sheets
-import '../sheets/add-sheet.dart';
+import '/sheets/add-sheet.dart';
 
 class AddButton extends StatelessWidget {
-  final Function(Position) onPressed;
+  final Function(LatLng) onPressed;
 
   const AddButton({
     Key? key,
@@ -19,7 +21,12 @@ class AddButton extends StatelessWidget {
     // Get current position
     Position currentPosition = await Geolocator.getCurrentPosition();
     // Animate to current position
-    onPressed(currentPosition);
+    onPressed(
+      LatLng(
+        currentPosition.latitude,
+        currentPosition.longitude,
+      ),
+    );
     // Show add sheet
     showCupertinoModalBottomSheet(
       context: context,

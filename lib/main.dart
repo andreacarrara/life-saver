@@ -16,9 +16,11 @@ class LifeSaver extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Life Saver',
+      // Set app font
       theme: ThemeData(
         textTheme: GoogleFonts.interTextTheme(),
       ),
+      // Enable sheet animation
       onGenerateRoute: (RouteSettings settings) => MaterialWithModalsPageRoute(
         builder: (BuildContext context) => Home(),
       ),
