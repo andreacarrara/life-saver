@@ -171,7 +171,7 @@ class _MarkerSheetState extends State<MarkerSheet> {
               ],
             ),
             SizedBox(
-              height: 30,
+              height: 32,
             ),
             // Address
             Padding(
@@ -188,7 +188,7 @@ class _MarkerSheetState extends State<MarkerSheet> {
               ),
             ),
             SizedBox(
-              height: 34,
+              height: 36,
             ),
             // Reviews
             Row(
@@ -214,7 +214,7 @@ class _MarkerSheetState extends State<MarkerSheet> {
               ],
             ),
             SizedBox(
-              height: 42,
+              height: 44,
             ),
             // Buttons
             Row(
@@ -243,7 +243,7 @@ class _MarkerSheetState extends State<MarkerSheet> {
               ],
             ),
             SizedBox(
-              height: 44 + bottomPadding,
+              height: 46 + bottomPadding,
             ),
           ],
         ),

@@ -7,7 +7,7 @@ import 'package:geolocator/geolocator.dart';
 // Map
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 // Sheets
-import '/sheets/add-sheet.dart';
+import '/sheets/add_sheet.dart';
 
 class AddButton extends StatelessWidget {
   final Function(LatLng) onPressed;
