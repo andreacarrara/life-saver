@@ -11,6 +11,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 // Buttons
 import 'buttons/control-button.dart';
 import 'buttons/add-button.dart';
+// Utilities
+import 'utilities/logo.dart';
+import 'utilities/permission.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -21,26 +24,26 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with TickerProviderStateMixin {
   Completer<GoogleMapController> _mapController = Completer();
-  Position? _initialPosition; // To be set later
+  LocationPermission? _locationPermission; // To be set later
 
   @override
   void initState() {
     super.initState();
-    _setInitialPosition();
+    _setLocationPermission();
   }
 
-  Future<void> _setInitialPosition() async {
+  Future<void> _setLocationPermission() async {
     // Request location permission
-    LocationPermission permission = await Geolocator.requestPermission();
-    // If location permission has been granted
-    if (permission == LocationPermission.whileInUse) {
-      // Get initial position
-      Position initialPosition = await Geolocator.getCurrentPosition();
-      // Set initial position
-      setState(() {
-        _initialPosition = initialPosition;
-      });
-    }
+    LocationPermission locationPermission =
+        await Geolocator.requestPermission();
+    // Set location permission
+    setState(() {
+      _locationPermission = locationPermission;
+    });
+  }
+
+  Future<Position> _getCurrentPosition() async {
+    return await Geolocator.getCurrentPosition();
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -148,61 +151,67 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // Compute padding
-    double topPadding = MediaQuery.of(context).viewPadding.top / 2;
-    double bottomPadding = MediaQuery.of(context).viewPadding.bottom / 2;
+    // If location permission is still loading
+    if (_locationPermission == null) return Logo();
 
-    // If location permission has not been granted
-    if (_initialPosition == null) {
-      return Scaffold(
-        body: Center(
-          child: Text(
-            'Grant location permission',
-          ),
-        ),
-      );
-    }
+    // If location permission has been denied
+    if (_locationPermission == LocationPermission.deniedForever)
+      return Permission();
+
     // If location permission has been granted
-    return Scaffold(
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.dark,
-        child: Stack(
-          children: <Widget>[
-            // Map
-            Map(
-              initialPosition: _initialPosition!,
-              onMapCreated: _onMapCreated,
-              onMarkerTapped: _animateToLatLng,
+    return FutureBuilder(
+      future: _getCurrentPosition(),
+      builder: (BuildContext context, AsyncSnapshot<Position> snapshot) {
+        // Compute padding
+        double topPadding = MediaQuery.of(context).viewPadding.top / 2;
+        double bottomPadding = MediaQuery.of(context).viewPadding.bottom / 2;
+
+        // If initial position is still loading
+        if (!snapshot.hasData) return Logo();
+
+        // If initial position has been loaded
+        return Scaffold(
+          body: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle.dark,
+            child: Stack(
+              children: <Widget>[
+                // Map
+                Map(
+                  initialPosition: snapshot.data!,
+                  onMapCreated: _onMapCreated,
+                  onMarkerTapped: _animateToLatLng,
+                ),
+                // Info button
+                Positioned(
+                  top: 30 + topPadding,
+                  right: 15,
+                  child: ControlButton(
+                    onPressed: () {},
+                    icon: CupertinoIcons.info_circle_fill,
+                  ),
+                ),
+                // My location button
+                Positioned(
+                  top: 80 + topPadding,
+                  right: 15,
+                  child: ControlButton(
+                    onPressed: _myLocationPressed,
+                    icon: CupertinoIcons.location_circle_fill,
+                  ),
+                ),
+                // Add button
+                Positioned(
+                  bottom: 20 + bottomPadding,
+                  right: 20,
+                  child: AddButton(
+                    onPressed: _animateToLatLng,
+                  ),
+                )
+              ],
             ),
-            // Info button
-            Positioned(
-              top: 30 + topPadding,
-              right: 15,
-              child: ControlButton(
-                onPressed: () {},
-                icon: CupertinoIcons.info_circle_fill,
-              ),
-            ),
-            // My location button
-            Positioned(
-              top: 80 + topPadding,
-              right: 15,
-              child: ControlButton(
-                onPressed: _myLocationPressed,
-                icon: CupertinoIcons.location_circle_fill,
-              ),
-            ),
-            // Add button
-            Positioned(
-              bottom: 20 + bottomPadding,
-              right: 20,
-              child: AddButton(
-                onPressed: _animateToLatLng,
-              ),
-            )
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

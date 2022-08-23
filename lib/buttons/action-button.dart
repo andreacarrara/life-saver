@@ -1,5 +1,5 @@
 // User interface
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ActionButton extends StatelessWidget {
@@ -18,28 +18,22 @@ class ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 40,
-      child: TextButton(
-        onPressed: onPressed,
-        style: ButtonStyle(
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          backgroundColor: MaterialStateProperty.all(backgroundColor),
-          overlayColor: MaterialStateProperty.all(Colors.transparent),
-        ),
-        child: Text(
-          text,
-          overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.inter(
-            textStyle: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: textColor,
-            ),
+    return CupertinoButton(
+      onPressed: onPressed,
+      color: backgroundColor,
+      borderRadius: BorderRadius.circular(10),
+      padding: EdgeInsets.symmetric(
+        vertical: 0,
+        horizontal: 24,
+      ),
+      child: Text(
+        text,
+        overflow: TextOverflow.ellipsis,
+        style: GoogleFonts.inter(
+          textStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: textColor,
           ),
         ),
       ),

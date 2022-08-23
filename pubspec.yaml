@@ -22,6 +22,7 @@ dependencies:
   geoflutterfire: ^3.0.2
   map_launcher: ^2.3.0+1
   shared_preferences: ^2.0.15
+  app_settings: ^4.1.8
 
 dev_dependencies:
   flutter_test:
