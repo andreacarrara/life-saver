@@ -16,12 +16,14 @@ import 'sheets/marker_sheet.dart';
 
 class Map extends StatefulWidget {
   final Position initialPosition;
+  final Function(DocumentSnapshot<Object?>) setClosestMarker;
   final Function(GoogleMapController) onMapCreated;
   final Function(LatLng) onMarkerTapped;
 
   const Map({
     Key? key,
     required this.initialPosition,
+    required this.setClosestMarker,
     required this.onMapCreated,
     required this.onMarkerTapped,
   }) : super(key: key);
@@ -33,7 +35,7 @@ class Map extends StatefulWidget {
 class _MapState extends State<Map> {
   Stream<List<DocumentSnapshot>>? _markersStream; // To be set later
   int _maxMarkers = 10; // Maximum number of markers to display
-  double _radius = 5; // Radius of geoquery in kilometers
+  double _radius = 20; // Radius of geoquery in kilometers
 
   @override
   void initState() {
@@ -132,6 +134,8 @@ class _MapState extends State<Map> {
         if (snapshot.hasData) {
           // Get list of documents
           List<DocumentSnapshot> documents = _getDocuments(snapshot.data!);
+          // Set closest marker
+          if (documents.isNotEmpty) widget.setClosestMarker(documents[0]);
           // Read list of documents
           for (DocumentSnapshot document in documents) {
             // Read marker location
@@ -163,8 +167,9 @@ class _MapState extends State<Map> {
           ),
           markers: markers,
           myLocationEnabled: true,
-          minMaxZoomPreference: MinMaxZoomPreference(10, null),
+          minMaxZoomPreference: MinMaxZoomPreference(8, null),
           myLocationButtonEnabled: false,
+          rotateGesturesEnabled: false,
           zoomControlsEnabled: false,
           mapToolbarEnabled: false,
           compassEnabled: false,

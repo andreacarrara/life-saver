@@ -11,12 +11,13 @@ import 'package:map_launcher/map_launcher.dart';
 // Local storage
 import 'package:shared_preferences/shared_preferences.dart';
 // Buttons
-import '/buttons/action-button.dart';
+import '/buttons/thumb_button.dart';
+import '/buttons/action_button.dart';
 
 class MarkerSheet extends StatefulWidget {
   final DocumentSnapshot document;
 
-  MarkerSheet({
+  const MarkerSheet({
     Key? key,
     required this.document,
   }) : super(key: key);
@@ -27,14 +28,15 @@ class MarkerSheet extends StatefulWidget {
 
 class _MarkerSheetState extends State<MarkerSheet> {
   String _address = 'Loading...'; // To be set later
-  bool _reviewed = true; // To be set later
-  int _reviews = -1; // To be set later
+  bool _isReviewed = true; // To be set later
+  int _confirmations = -1; // To be set later
+  int _reports = -1; // To be set later
 
   @override
   void initState() {
     super.initState();
     _setAddress();
-    _setReviewed();
+    _setIsReviewed();
     _setReviews();
   }
 
@@ -49,60 +51,75 @@ class _MarkerSheetState extends State<MarkerSheet> {
     // Get nearest placemark
     Placemark placemark = placemarks[0];
     // Compute address
-    String address = 'Middle of nowhere';
-    if (placemark.street!.isNotEmpty) address = placemark.street!;
-    if (placemark.locality!.isNotEmpty) address += ', ' + placemark.locality!;
-    if (placemark.postalCode!.isNotEmpty)
-      address += ' ' + placemark.postalCode!;
-    // Set  address
+    String address = placemark.street!;
+    if (address.isNotEmpty) address += ', ';
+    address += placemark.locality!;
+    if (address.isNotEmpty) address += ' ';
+    address += placemark.postalCode!;
+    if (address.isEmpty) address = 'Middle of nowhere';
+    // Set address
     setState(() {
       _address = address;
     });
   }
 
-  Future<void> _setReviewed() async {
+  Future<void> _setIsReviewed() async {
     // Initialize local storage
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    // Read local storage
-    bool? reviewed = localStorage.getBool(widget.document.id);
-    // Set reviewed
+    // Read from local storage
+    bool? isReviewed = localStorage.getBool(widget.document.id);
+    // Set is reviewed
     setState(() {
-      _reviewed = reviewed != null;
+      _isReviewed = isReviewed != null;
     });
   }
 
   void _setReviews() {
     setState(() {
-      _reviews = widget.document.get('reviews');
+      _confirmations = widget.document.get('confirmations');
+      _reports = widget.document.get('reports');
     });
   }
 
   String _getReviews() {
-    if (_reviews == -1) return 'Loading...';
-    if (_reviews == 1) return '1 Review';
-    return '$_reviews Reviews';
+    // If reviews are still loading
+    if (_confirmations == -1 || _reports == -1) return 'Loading...';
+    // Compute reviews
+    String reviews = '$_confirmations';
+    reviews += _confirmations == 1 ? ' Confirmation' : ' Confirmations';
+    reviews += ', $_reports';
+    reviews += _reports == 1 ? ' Report' : ' Reports';
+    // Return reviews
+    return reviews;
   }
 
-  Future<void> _review() async {
-    // Set reviewed
+  Future<void> _onThumbPressed(bool isUp) async {
     setState(() {
-      _reviewed = true;
-    });
-    // Set reviews
-    setState(() {
-      _reviews = _reviews + 1;
+      // Set is reviewed
+      _isReviewed = true;
+      // Set reviews
+      isUp ? _confirmations += 1 : _reports += 1;
     });
     // Initialize local storage
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    // Write local storage
+    // Write to local storage
     await localStorage.setBool(widget.document.id, true);
     // Initialize Firestore
     final firestore = FirebaseFirestore.instance;
     // Update reviews
-    firestore
-        .collection('defibrillators')
-        .doc(widget.document.id)
-        .update({'reviews': _reviews});
+    if (isUp) {
+      // Update confirmations
+      firestore
+          .collection('defibrillators')
+          .doc(widget.document.id)
+          .update({'confirmations': _confirmations});
+    } else {
+      // Update reports
+      firestore
+          .collection('defibrillators')
+          .doc(widget.document.id)
+          .update({'reports': _reports});
+    }
   }
 
   Future<void> _showDirections() async {
@@ -111,9 +128,9 @@ class _MarkerSheetState extends State<MarkerSheet> {
     // Get list of available maps
     List<AvailableMap> availableMaps = await MapLauncher.installedMaps;
     // Show directions on default map
-    await availableMaps.first.showDirections(
-      destinationTitle: 'Defibrillator',
-      destination: Coords(
+    await availableMaps.first.showMarker(
+      title: 'Defibrillator',
+      coords: Coords(
         geoPoint.latitude,
         geoPoint.longitude,
       ),
@@ -145,13 +162,13 @@ class _MarkerSheetState extends State<MarkerSheet> {
               ),
             ),
             SizedBox(
-              height: 18,
+              height: 20,
             ),
             // Location
             Row(
               children: [
                 Icon(
-                  CupertinoIcons.location_solid,
+                  CupertinoIcons.arrow_up_right_circle_fill,
                   color: Colors.grey.shade400,
                 ),
                 SizedBox(
@@ -171,7 +188,7 @@ class _MarkerSheetState extends State<MarkerSheet> {
               ],
             ),
             SizedBox(
-              height: 32,
+              height: 30,
             ),
             // Address
             Padding(
@@ -194,14 +211,14 @@ class _MarkerSheetState extends State<MarkerSheet> {
             Row(
               children: [
                 Icon(
-                  CupertinoIcons.checkmark_shield_fill,
+                  CupertinoIcons.checkmark_circle_fill,
                   color: Colors.grey.shade400,
                 ),
                 SizedBox(
                   width: 6,
                 ),
                 Text(
-                  _getReviews(),
+                  'Reviews',
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
                     textStyle: TextStyle(
@@ -214,19 +231,56 @@ class _MarkerSheetState extends State<MarkerSheet> {
               ],
             ),
             SizedBox(
+              height: 30,
+            ),
+            // Confirmations and Reports
+            Padding(
+              padding: EdgeInsets.only(left: 6),
+              child: Text(
+                _getReviews(),
+                overflow: TextOverflow.clip,
+                style: GoogleFonts.inter(
+                  textStyle: TextStyle(
+                    fontSize: 18,
+                    color: Colors.black87,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
               height: 44,
             ),
             // Buttons
             Row(
               children: <Widget>[
-                // Review
+                // Thumbs
                 Expanded(
-                  child: ActionButton(
-                    text: _reviewed ? 'Reviewed' : 'Review',
-                    onPressed: _reviewed ? () {} : _review,
-                    backgroundColor: Colors.grey.shade200,
-                    textColor: Colors.black87,
-                  ),
+                  child: _isReviewed
+                      ? ActionButton(
+                          text: 'Reviewed',
+                          onPressed: () {},
+                          backgroundColor: Colors.grey.shade200,
+                          textColor: Colors.black,
+                        )
+                      : Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: ThumbButton(
+                                isUp: true,
+                                onPressed: _onThumbPressed,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 12,
+                            ),
+                            Expanded(
+                              child: ThumbButton(
+                                isUp: false,
+                                onPressed: _onThumbPressed,
+                              ),
+                            ),
+                          ],
+                        ),
                 ),
                 SizedBox(
                   width: 24,

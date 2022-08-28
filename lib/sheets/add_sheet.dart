@@ -11,12 +11,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // Geoqueries
 import 'package:geoflutterfire/geoflutterfire.dart';
 // Buttons
-import '/buttons/action-button.dart';
+import '/buttons/action_button.dart';
 
 class AddSheet extends StatefulWidget {
   final Position currentPosition;
 
-  AddSheet({
+  const AddSheet({
     Key? key,
     required this.currentPosition,
   }) : super(key: key);
@@ -43,13 +43,12 @@ class _AddSheetState extends State<AddSheet> {
     // Get nearest current placemark
     Placemark currentPlacemark = currentPlacemarks[0];
     // Compute current address
-    String currentAddress = 'Middle of nowhere';
-    if (currentPlacemark.street!.isNotEmpty)
-      currentAddress = currentPlacemark.street!;
-    if (currentPlacemark.locality!.isNotEmpty)
-      currentAddress += ', ' + currentPlacemark.locality!;
-    if (currentPlacemark.postalCode!.isNotEmpty)
-      currentAddress += ' ' + currentPlacemark.postalCode!;
+    String currentAddress = currentPlacemark.street!;
+    if (currentAddress.isNotEmpty) currentAddress += ', ';
+    currentAddress += currentPlacemark.locality!;
+    if (currentAddress.isNotEmpty) currentAddress += ' ';
+    currentAddress += currentPlacemark.postalCode!;
+    if (currentAddress.isEmpty) currentAddress = 'Middle of nowhere';
     // Set current address
     setState(() {
       _currentAddress = currentAddress;
@@ -79,7 +78,8 @@ class _AddSheetState extends State<AddSheet> {
     );
     firestore.collection('defibrillators').add({
       'position': defibrillator.data,
-      'reviews': 0,
+      'confirmations': 0,
+      'reports': 0,
     });
   }
 
@@ -108,13 +108,13 @@ class _AddSheetState extends State<AddSheet> {
               ),
             ),
             SizedBox(
-              height: 18,
+              height: 20,
             ),
             // Location
             Row(
               children: [
                 Icon(
-                  CupertinoIcons.location_solid,
+                  CupertinoIcons.arrow_up_right_circle_fill,
                   color: Colors.grey.shade400,
                 ),
                 SizedBox(
@@ -134,7 +134,7 @@ class _AddSheetState extends State<AddSheet> {
               ],
             ),
             SizedBox(
-              height: 32,
+              height: 30,
             ),
             // Address
             Padding(

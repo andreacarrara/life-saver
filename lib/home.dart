@@ -1,6 +1,8 @@
 // User interface
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 // Location services
 import 'package:geolocator/geolocator.dart';
 // Map
@@ -8,9 +10,15 @@ import 'map.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+// Firebase Firestore
+import 'package:cloud_firestore/cloud_firestore.dart';
 // Buttons
-import 'buttons/control-button.dart';
-import 'buttons/add-button.dart';
+import 'buttons/control_button.dart';
+import 'buttons/closest_button.dart';
+// Sheets
+import 'sheets/add_sheet.dart';
+import 'sheets/info_sheet.dart';
+import 'sheets/marker_sheet.dart';
 // Utilities
 import 'utilities/logo.dart';
 import 'utilities/permission.dart';
@@ -23,13 +31,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with TickerProviderStateMixin {
+  bool? _locationPermission; // To be set later
+  Position? _initialPosition; // To be set later
+  DocumentSnapshot<Object?>? _closestMarker; // To be set later
   Completer<GoogleMapController> _mapController = Completer();
-  LocationPermission? _locationPermission; // To be set later
 
   @override
   void initState() {
     super.initState();
-    _setLocationPermission();
+    _setInitState();
+  }
+
+  Future<void> _setInitState() async {
+    await _setLocationPermission();
+    await _setInitialPosition();
   }
 
   Future<void> _setLocationPermission() async {
@@ -38,32 +53,36 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         await Geolocator.requestPermission();
     // Set location permission
     setState(() {
-      _locationPermission = locationPermission;
+      locationPermission == LocationPermission.deniedForever
+          ? _locationPermission = false
+          : _locationPermission = true;
     });
+  }
+
+  Future<void> _setInitialPosition() async {
+    // If location permission has been granted
+    if (_locationPermission!) {
+      // Get current position
+      Position initialPosition = await _getCurrentPosition();
+      // Set current position
+      setState(() {
+        _initialPosition = initialPosition;
+        _locationPermission = true;
+      });
+    }
   }
 
   Future<Position> _getCurrentPosition() async {
     return await Geolocator.getCurrentPosition();
   }
 
-  void _onMapCreated(GoogleMapController controller) {
-    _mapController.complete(controller);
-    // Style map
-    rootBundle.loadString('assets/mapStyle.json').then((String mapStyle) {
-      controller.setMapStyle(mapStyle);
+  void _setClosestMarker(DocumentSnapshot<Object?> closestMarker) {
+    // Wait for build to finish
+    SchedulerBinding.instance.addPostFrameCallback((duration) {
+      setState(() {
+        _closestMarker = closestMarker;
+      });
     });
-  }
-
-  Future<void> _myLocationPressed() async {
-    // Get current position
-    Position currentPosition = await Geolocator.getCurrentPosition();
-    // Animate to current position
-    _animateToLatLng(
-      LatLng(
-        currentPosition.latitude,
-        currentPosition.longitude,
-      ),
-    );
   }
 
   Future<void> _animateToLatLng(LatLng latLng) async {
@@ -149,69 +168,133 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController.complete(controller);
+    // Style map
+    rootBundle.loadString('assets/mapStyle.json').then((String mapStyle) {
+      controller.setMapStyle(mapStyle);
+    });
+  }
+
+  Future<void> _onMyLocationPressed() async {
+    // Get current position
+    Position currentPosition = await _getCurrentPosition();
+    // Animate to current position
+    _animateToLatLng(
+      LatLng(
+        currentPosition.latitude,
+        currentPosition.longitude,
+      ),
+    );
+  }
+
+  Future<void> _onAddPressed(BuildContext context) async {
+    // Get current position
+    Position currentPosition = await _getCurrentPosition();
+    // Animate to current position
+    _animateToLatLng(
+      LatLng(
+        currentPosition.latitude,
+        currentPosition.longitude,
+      ),
+    );
+    // Show add sheet
+    showCupertinoModalBottomSheet(
+      context: context,
+      topRadius: Radius.circular(10),
+      builder: (BuildContext context) => AddSheet(
+        currentPosition: currentPosition,
+      ),
+    );
+  }
+
+  void _onClosestPressed() {
+    // If no closest marker
+    if (_closestMarker == null) {
+      // Show info sheet
+      showCupertinoModalBottomSheet(
+        context: context,
+        topRadius: Radius.circular(10),
+        builder: (BuildContext context) => InfoSheet(),
+      );
+    } else {
+      // Read marker location
+      GeoPoint geoPoint = _closestMarker!.get('position')['geopoint'];
+      // Animate to marker location
+      _animateToLatLng(
+        LatLng(
+          geoPoint.latitude,
+          geoPoint.longitude,
+        ),
+      );
+      // Show marker sheet
+      showCupertinoModalBottomSheet(
+        context: context,
+        topRadius: Radius.circular(10),
+        builder: (BuildContext context) => MarkerSheet(
+          document: _closestMarker!,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Compute padding
+    double topPadding = MediaQuery.of(context).viewPadding.top / 2;
+    double bottomPadding = MediaQuery.of(context).viewPadding.bottom / 2;
+
     // If location permission is still loading
     if (_locationPermission == null) return Logo();
 
     // If location permission has been denied
-    if (_locationPermission == LocationPermission.deniedForever)
-      return Permission();
+    if (_locationPermission == false) return Permission();
 
-    // If location permission has been granted
-    return FutureBuilder(
-      future: _getCurrentPosition(),
-      builder: (BuildContext context, AsyncSnapshot<Position> snapshot) {
-        // Compute padding
-        double topPadding = MediaQuery.of(context).viewPadding.top / 2;
-        double bottomPadding = MediaQuery.of(context).viewPadding.bottom / 2;
+    // If initial position is still loading
+    if (_initialPosition == null) return Logo();
 
-        // If initial position is still loading
-        if (!snapshot.hasData) return Logo();
-
-        // If initial position has been loaded
-        return Scaffold(
-          body: AnnotatedRegion<SystemUiOverlayStyle>(
-            value: SystemUiOverlayStyle.dark,
-            child: Stack(
-              children: <Widget>[
-                // Map
-                Map(
-                  initialPosition: snapshot.data!,
-                  onMapCreated: _onMapCreated,
-                  onMarkerTapped: _animateToLatLng,
-                ),
-                // Info button
-                Positioned(
-                  top: 30 + topPadding,
-                  right: 15,
-                  child: ControlButton(
-                    onPressed: () {},
-                    icon: CupertinoIcons.info_circle_fill,
-                  ),
-                ),
-                // My location button
-                Positioned(
-                  top: 80 + topPadding,
-                  right: 15,
-                  child: ControlButton(
-                    onPressed: _myLocationPressed,
-                    icon: CupertinoIcons.location_circle_fill,
-                  ),
-                ),
-                // Add button
-                Positioned(
-                  bottom: 20 + bottomPadding,
-                  right: 20,
-                  child: AddButton(
-                    onPressed: _animateToLatLng,
-                  ),
-                )
-              ],
+    // If initial position has been loaded
+    return Scaffold(
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.dark,
+        child: Stack(
+          children: <Widget>[
+            // Map
+            Map(
+              initialPosition: _initialPosition!,
+              setClosestMarker: _setClosestMarker,
+              onMarkerTapped: _animateToLatLng,
+              onMapCreated: _onMapCreated,
             ),
-          ),
-        );
-      },
+            // My location button
+            Positioned(
+              top: 30 + topPadding,
+              right: 15,
+              child: ControlButton(
+                onPressed: _onMyLocationPressed,
+                icon: CupertinoIcons.location_circle_fill,
+              ),
+            ),
+            // Add button
+            Positioned(
+              top: 80 + topPadding,
+              right: 15,
+              child: ControlButton(
+                onPressed: () => _onAddPressed(context),
+                icon: CupertinoIcons.add_circled_solid,
+              ),
+            ),
+            // Closest button
+            Positioned(
+              bottom: 20 + bottomPadding,
+              right: 20,
+              child: ClosestButton(
+                onPressed: _onClosestPressed,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
