@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
 class ThumbButton extends StatelessWidget {
-  final bool isUp;
   final Function(bool) onPressed;
+  final bool isUp;
 
   const ThumbButton({
     Key? key,
-    required this.isUp,
     required this.onPressed,
+    required this.isUp,
   }) : super(key: key);
 
   @override

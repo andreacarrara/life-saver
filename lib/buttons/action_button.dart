@@ -3,17 +3,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ActionButton extends StatelessWidget {
-  final String text;
   final Function() onPressed;
-  final Color backgroundColor;
+  final String text;
   final Color textColor;
+  final Color backgroundColor;
 
   const ActionButton({
     Key? key,
-    required this.text,
     required this.onPressed,
-    required this.backgroundColor,
+    required this.text,
     required this.textColor,
+    required this.backgroundColor,
   }) : super(key: key);
 
   @override
@@ -30,11 +30,9 @@ class ActionButton extends StatelessWidget {
         text,
         overflow: TextOverflow.ellipsis,
         style: GoogleFonts.inter(
-          textStyle: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: textColor,
-          ),
+          fontSize: 18,
+          color: textColor,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );

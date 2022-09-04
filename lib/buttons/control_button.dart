@@ -19,12 +19,12 @@ class ControlButton extends StatelessWidget {
       backgroundColor: Colors.white,
       foregroundColor: Colors.black87,
       splashColor: Colors.transparent,
-      mini: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(
           Radius.circular(10),
         ),
       ),
+      mini: true,
       child: Icon(
         icon,
       ),

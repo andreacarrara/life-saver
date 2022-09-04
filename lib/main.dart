@@ -1,11 +1,22 @@
+// Splash screen
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 // User interface
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+// Firebase Firestore
+import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 // Home
 import 'home.dart';
 
-void main() {
+void main() async {
+  // Wait for binding to finish
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  // Preserve splash screen
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  // Initialize Firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(LifeSaver());
 }
 
@@ -21,8 +32,8 @@ class LifeSaver extends StatelessWidget {
         textTheme: GoogleFonts.interTextTheme(),
       ),
       // Enable sheet animation
-      onGenerateRoute: (RouteSettings settings) => MaterialWithModalsPageRoute(
-        builder: (BuildContext context) => Home(),
+      onGenerateRoute: (settings) => MaterialWithModalsPageRoute(
+        builder: (context) => Home(),
       ),
       debugShowCheckedModeBanner: false,
     );

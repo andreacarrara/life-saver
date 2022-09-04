@@ -5,12 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 // Buttons
 import '/buttons/action_button.dart';
 
-class InfoSheet extends StatelessWidget {
-  const InfoSheet({Key? key}) : super(key: key);
+class AlertSheet extends StatelessWidget {
+  const AlertSheet({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Compute padding
     double bottomPadding = MediaQuery.of(context).viewPadding.bottom / 2;
 
     return Material(
@@ -20,14 +19,14 @@ class InfoSheet extends StatelessWidget {
           vertical: 14,
         ),
         child: Wrap(
-          children: <Widget>[
+          children: [
             // Knob
             Center(
               child: Container(
                 width: 28,
                 height: 6,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
+                  color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -35,25 +34,23 @@ class InfoSheet extends StatelessWidget {
             SizedBox(
               height: 20,
             ),
-            // Header
+            // Alert
             Row(
               children: [
                 Icon(
                   CupertinoIcons.exclamationmark_circle_fill,
-                  color: Colors.grey.shade400,
+                  color: Colors.grey[400],
                 ),
                 SizedBox(
                   width: 6,
                 ),
                 Text(
-                  'Message',
+                  'Alert',
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
-                    textStyle: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.grey.shade400,
-                    ),
+                    fontSize: 16,
+                    color: Colors.grey[400],
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ],
@@ -61,17 +58,17 @@ class InfoSheet extends StatelessWidget {
             SizedBox(
               height: 30,
             ),
-            // Body
+            // Message
             Padding(
-              padding: EdgeInsets.only(left: 6),
+              padding: EdgeInsets.only(
+                left: 6,
+              ),
               child: Text(
                 'No nearby defibrillators were found',
                 overflow: TextOverflow.clip,
                 style: GoogleFonts.inter(
-                  textStyle: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black87,
-                  ),
+                  fontSize: 18,
+                  color: Colors.black87,
                 ),
               ),
             ),
@@ -83,16 +80,16 @@ class InfoSheet extends StatelessWidget {
               children: [
                 Expanded(
                   child: ActionButton(
-                    text: 'Close',
                     onPressed: () => Navigator.of(context).pop(),
-                    backgroundColor: Colors.grey.shade200,
+                    text: 'Close',
                     textColor: Colors.black87,
+                    backgroundColor: Colors.grey[200]!,
                   ),
                 ),
               ],
             ),
             SizedBox(
-              height: 46 + bottomPadding,
+              height: bottomPadding + 46,
             ),
           ],
         ),

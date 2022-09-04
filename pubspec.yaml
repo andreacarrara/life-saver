@@ -10,26 +10,55 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.2
   
+  # Splash screen
+  flutter_native_splash: ^2.2.8
+  # User interface
   google_fonts: ^3.0.1
+  cupertino_icons: ^1.0.2
   modal_bottom_sheet: ^2.1.0
+  # Connection checker
+  internet_connection_checker: ^0.0.1+4
+  # Settings launcher
+  app_settings: ^4.1.8
+  # Location services
   geolocator: ^9.0.1
   geocoding: ^2.0.4
+  # Google Maps
   google_maps_flutter: ^2.1.10
+  # Firebase Firestore
   firebase_core: ^1.20.0
   cloud_firestore: ^3.4.3
   geoflutterfire: ^3.0.2
-  map_launcher: ^2.3.0+1
+  # Local storage
   shared_preferences: ^2.0.15
-  app_settings: ^4.1.8
+  # Map launcher
+  map_launcher: ^2.3.0+1
+
+# Splash screen
+flutter_native_splash:
+  color: '#fafafa'
+  image: assets/icon/Icon-400.png
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  # Linter
   flutter_lints: ^2.0.0
+  # Icon
+  flutter_launcher_icons: ^0.10.0
+
+# Icon
+flutter_icons:
+  ios: true
+  android: true
+  image_path: assets/icon/Icon-600.png
 
 flutter:
   uses-material-design: true
   assets:
+    # Font
+    - assets/font/
+    # Map style
     - assets/mapStyle.json
