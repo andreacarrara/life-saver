@@ -27,6 +27,7 @@ class MarkerSheet extends StatefulWidget {
 
 class _MarkerSheetState extends State<MarkerSheet> {
   final MarkerController _markerController = MarkerController();
+  String _address = 'Loading...';
   // Late keywork is required to access widget.document
   late int _reviews = widget.document.get('reviews');
   bool _reviewed = true;
@@ -34,27 +35,24 @@ class _MarkerSheetState extends State<MarkerSheet> {
   @override
   initState() {
     super.initState();
+    _setAddress();
     _setReviewed();
   }
 
-  Future<void> _setReviewed() async {
-    _reviewed = await _markerController.getReviewed(widget.document.id);
-    setState(() {});
-  }
-
-  Future<String> _getAddress() async {
+  Future<void> _setAddress() async {
     GeoPoint geoPoint = widget.document.get('position')['geopoint'];
-    return await _markerController.getAddress(
+    _address = await _markerController.getAddress(
       LatLng(
         geoPoint.latitude,
         geoPoint.longitude,
       ),
     );
+    setState(() {});
   }
 
-  String _getReviews() {
-    if (_reviews == 1) return '1 Review';
-    return '$_reviews Reviews';
+  Future<void> _setReviewed() async {
+    _reviewed = await _markerController.getReviewed(widget.document.id);
+    setState(() {});
   }
 
   void _onThumbPressed(bool isUp) {
@@ -65,7 +63,7 @@ class _MarkerSheetState extends State<MarkerSheet> {
       // Close sheet
       Navigator.of(context).pop();
     } else {
-      // Else, set reviews
+      // Set reviews
       setState(() {});
     }
     // Update marker
@@ -76,11 +74,8 @@ class _MarkerSheetState extends State<MarkerSheet> {
   }
 
   Future<void> _showDirections() async {
-    // Read position
     GeoPoint geoPoint = widget.document.get('position')['geopoint'];
-    // Get list of available maps
     List<AvailableMap> availableMaps = await MapLauncher.installedMaps;
-    // Show directions on default map
     availableMaps.first.showMarker(
       title: 'Defibrillator',
       coords: Coords(
@@ -145,19 +140,13 @@ class _MarkerSheetState extends State<MarkerSheet> {
               padding: EdgeInsets.only(
                 left: 6,
               ),
-              child: FutureBuilder<String>(
-                future: _getAddress(),
-                initialData: 'Loading...',
-                builder: ((context, snapshot) {
-                  return Text(
-                    snapshot.data!,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(
-                      fontSize: 18,
-                      color: Colors.black87,
-                    ),
-                  );
-                }),
+              child: Text(
+                _address,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  color: Colors.black87,
+                ),
               ),
             ),
             SizedBox(
@@ -174,7 +163,7 @@ class _MarkerSheetState extends State<MarkerSheet> {
                   width: 6,
                 ),
                 Text(
-                  _getReviews(),
+                  '$_reviews Review' + (_reviews == 1 ? '' : 's'),
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
                     fontSize: 16,

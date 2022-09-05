@@ -16,7 +16,7 @@ class ThumbButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoButton(
       onPressed: () => onPressed(isUp),
-      color: Colors.grey.shade200,
+      color: Colors.grey[200],
       padding: EdgeInsets.zero,
       child: Icon(
         isUp

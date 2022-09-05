@@ -11,7 +11,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'home.dart';
 
 void main() async {
-  // Wait for binding to finish
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   // Preserve splash screen
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);

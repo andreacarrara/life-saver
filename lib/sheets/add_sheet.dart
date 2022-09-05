@@ -50,7 +50,7 @@ class AddSheet extends StatelessWidget {
                 width: 28,
                 height: 6,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
+                  color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -63,7 +63,7 @@ class AddSheet extends StatelessWidget {
               children: [
                 Icon(
                   CupertinoIcons.arrow_up_right_circle_fill,
-                  color: Colors.grey.shade400,
+                  color: Colors.grey[400],
                 ),
                 SizedBox(
                   width: 6,
@@ -108,7 +108,7 @@ class AddSheet extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 44,
+              height: 42,
             ),
             // Buttons
             Row(
@@ -116,7 +116,7 @@ class AddSheet extends StatelessWidget {
                 // Cancel
                 Expanded(
                   child: ActionButton(
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: Navigator.of(context).pop,
                     text: 'Cancel',
                     textColor: Colors.black87,
                     backgroundColor: Colors.grey[200]!,

@@ -22,15 +22,15 @@ class ClosestButton extends StatelessWidget {
           Radius.circular(10),
         ),
       ),
+      icon: Icon(
+        CupertinoIcons.bolt_circle_fill,
+      ),
       label: Text(
         'Closest',
         style: TextStyle(
           fontSize: 16,
           letterSpacing: 0,
         ),
-      ),
-      icon: Icon(
-        CupertinoIcons.bolt_circle_fill,
       ),
     );
   }

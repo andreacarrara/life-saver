@@ -4,9 +4,9 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 // Location services
 import 'package:geolocator/geolocator.dart';
 // Google Maps
-import 'controllers/stream_controller.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 // Firebase Firestore
+import 'controllers/stream_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // Sheets
 import 'sheets/marker_sheet.dart';
@@ -14,7 +14,7 @@ import 'sheets/marker_sheet.dart';
 class Map extends StatelessWidget {
   final Position initialPosition;
   final Function(GoogleMapController) onMapCreated;
-  final Function(DocumentSnapshot) setClosestMarker;
+  final Function(DocumentSnapshot?) setClosestMarker;
   final Function(LatLng) onMarkerTapped;
 
   Map({
@@ -30,7 +30,6 @@ class Map extends StatelessWidget {
       StreamController(initialPosition: initialPosition);
 
   void onTapped(BuildContext context, DocumentSnapshot document) {
-    // Read marker position
     GeoPoint geoPoint = document.get('position')['geopoint'];
     // Animate to marker position
     onMarkerTapped(
@@ -55,19 +54,17 @@ class Map extends StatelessWidget {
     return StreamBuilder<List<DocumentSnapshot>>(
       stream: streamController.getStream(),
       builder: (context, snapshot) {
-        List<DocumentSnapshot> list = [];
-        if (snapshot.hasData) {
+        List<DocumentSnapshot> documents = [];
+        if (snapshot.hasData)
           // Sort and truncate documents
-          list = streamController.getList(snapshot.data!);
-          // Set closest marker
-          if (list.isNotEmpty) setClosestMarker(list[0]);
-        }
-        // Initiliaze set of markers
+          documents = streamController.getDocuments(snapshot.data!);
+        // Set closest marker
+        setClosestMarker(documents.length > 0 ? documents[0] : null);
+
         Set<Marker> markers = {};
-        for (DocumentSnapshot document in list) {
-          // Read marker position
+        for (DocumentSnapshot document in documents) {
           GeoPoint geoPoint = document.get('position')['geopoint'];
-          // Add marker to set
+          // Add marker
           markers.add(
             Marker(
               markerId: MarkerId(document.id),

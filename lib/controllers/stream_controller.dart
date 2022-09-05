@@ -19,7 +19,6 @@ class StreamController {
       latitude: initialPosition.latitude,
       longitude: initialPosition.longitude,
     );
-    // Return stream
     return geoflutterfire.collection(collectionRef: defibrillators).within(
           field: 'position',
           center: center,
@@ -27,7 +26,7 @@ class StreamController {
         );
   }
 
-  List<DocumentSnapshot> getList(List<DocumentSnapshot> documents) {
+  List<DocumentSnapshot> getDocuments(List<DocumentSnapshot> documents) {
     // Truncate number of documents
     int length = documents.length;
     if (length > 20) documents.removeRange(20, length);
@@ -37,10 +36,8 @@ class StreamController {
         initialPosition.latitude,
         initialPosition.longitude,
       );
-      // Read positions
       GeoPoint geoPointA = a.get('position')['geopoint'];
       GeoPoint geoPointB = b.get('position')['geopoint'];
-      // Compare distances
       return center
           .distance(
             lat: geoPointA.latitude,

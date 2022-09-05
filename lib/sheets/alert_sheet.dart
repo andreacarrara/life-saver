@@ -50,7 +50,7 @@ class AlertSheet extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 16,
                     color: Colors.grey[400],
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
@@ -73,14 +73,14 @@ class AlertSheet extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 44,
+              height: 42,
             ),
             // Close button
             Row(
               children: [
                 Expanded(
                   child: ActionButton(
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: Navigator.of(context).pop,
                     text: 'Close',
                     textColor: Colors.black87,
                     backgroundColor: Colors.grey[200]!,

@@ -5,19 +5,19 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapController {
+  late final GoogleMapController mapController;
   late final dynamic tickerProvider;
-  late final GoogleMapController controller;
 
-  MapController({required this.tickerProvider, required this.controller}) {
+  MapController({required this.mapController, required this.tickerProvider}) {
     // Style map
     rootBundle.loadString('assets/mapStyle.json').then((mapStyle) {
-      controller.setMapStyle(mapStyle);
+      mapController.setMapStyle(mapStyle);
     });
   }
 
   Future<void> animateToLatLng(LatLng latLng) async {
     LatLng center = await _getCenter();
-    double zoom = await controller.getZoomLevel();
+    double zoom = await mapController.getZoomLevel();
     // Initialize tweens
     Tween<double> latTween = Tween(
       begin: center.latitude,
@@ -57,7 +57,7 @@ class MapController {
   }
 
   Future<LatLng> _getCenter() async {
-    LatLngBounds region = await controller.getVisibleRegion();
+    LatLngBounds region = await mapController.getVisibleRegion();
     return LatLng(
       (region.northeast.latitude + region.southwest.latitude) / 2,
       (region.northeast.longitude + region.southwest.longitude) / 2,
@@ -65,7 +65,7 @@ class MapController {
   }
 
   void _moveToLatLngZoom(LatLng latLng, double zoom) {
-    controller.moveCamera(
+    mapController.moveCamera(
       CameraUpdate.newLatLngZoom(
         LatLng(
           latLng.latitude,

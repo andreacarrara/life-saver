@@ -10,14 +10,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class MarkerController {
   Future<String> getAddress(LatLng latLng) async {
-    // Get nearest placemark
     List<Placemark> placemarks = await placemarkFromCoordinates(
       latLng.latitude,
       latLng.longitude,
     );
-    // Get nearest placemark
     Placemark placemark = placemarks[0];
-    // Compute address
     String address = placemark.street!;
     if (address.isNotEmpty) address += ', ';
     address += placemark.locality!;
@@ -32,7 +29,6 @@ class MarkerController {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     // Initialize GeoFlutterFire
     Geoflutterfire geoflutterfire = Geoflutterfire();
-    // Add marker
     GeoFirePoint marker = geoflutterfire.point(
       latitude: latLng.latitude,
       longitude: latLng.longitude,
@@ -44,7 +40,7 @@ class MarkerController {
   }
 
   Future<bool> getReviewed(String id) async {
-    // Initiliaze local storage
+    // Initialize local storage
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     return localStorage.getBool(id) != null;
   }
@@ -61,7 +57,7 @@ class MarkerController {
       // Delete marker
       firestore.collection('defibrillators').doc(id).delete();
     } else {
-      // Else, update marker
+      // Update marker
       firestore.collection('defibrillators').doc(id).update({
         'reviews': reviews,
       });

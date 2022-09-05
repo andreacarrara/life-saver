@@ -44,7 +44,11 @@ class Home extends StatelessWidget {
       stream: InternetConnectionChecker().onStatusChange.asBroadcastStream(),
       builder: (context, snapshot) {
         // If internet status is loading
-        if (!snapshot.hasData) return Text('Loading');
+        if (!snapshot.hasData)
+          return Error(
+            message: internetMessage,
+            onPressed: AppSettings.openWirelessSettings,
+          );
         // If internet status is disconnected
         if (snapshot.data == InternetConnectionStatus.disconnected) {
           // Remove splash screen
@@ -59,7 +63,11 @@ class Home extends StatelessWidget {
           future: Geolocator.requestPermission(),
           builder: (context, snapshot) {
             // If location permission is loading
-            if (!snapshot.hasData) return Text('Loading..');
+            if (!snapshot.hasData)
+              return Error(
+                message: internetMessage,
+                onPressed: AppSettings.openWirelessSettings,
+              );
             // If location permission is denied
             if (snapshot.data == LocationPermission.deniedForever) {
               // Remove splash screen
@@ -73,8 +81,12 @@ class Home extends StatelessWidget {
             return FutureBuilder<Position>(
               future: Geolocator.getCurrentPosition(),
               builder: (context, snapshot) {
-                // If location permission is loading
-                if (!snapshot.hasData) return Text('Loading...');
+                // If current position is loading
+                if (!snapshot.hasData)
+                  return Error(
+                    message: internetMessage,
+                    onPressed: AppSettings.openWirelessSettings,
+                  );
                 // Remove splash screen
                 FlutterNativeSplash.remove();
                 // Else, show map
@@ -107,18 +119,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late final MapController _mapController;
   DocumentSnapshot? _closestMarker;
 
-  void _onMapCreated(GoogleMapController controller) {
+  void _onMapCreated(GoogleMapController mapController) {
     // Initialize map controller
     _mapController = MapController(
-      controller: controller,
+      mapController: mapController,
       tickerProvider: this,
     );
   }
 
-  void _setClosestMarker(DocumentSnapshot document) {
-    // Wait for build to finish
+  void _setClosestMarker(DocumentSnapshot? closestMarker) {
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      _closestMarker = document;
+      _closestMarker = closestMarker;
     });
   }
 
@@ -128,7 +139,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _onMyLocationPressed() async {
-    // Get current position
     Position currentPosition = await Geolocator.getCurrentPosition();
     // Animate to current position
     _mapController.animateToLatLng(
@@ -140,7 +150,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _onAddPressed() async {
-    // Get current position
     Position currentPosition = await Geolocator.getCurrentPosition();
     // Animate to current position
     _mapController.animateToLatLng(
@@ -168,7 +177,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         builder: (context) => AlertSheet(),
       );
     } else {
-      // Read marker position
       GeoPoint geoPoint = _closestMarker!.get('position')['geopoint'];
       // Animate to marker position
       _mapController.animateToLatLng(
@@ -190,7 +198,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // Compute padding
     double topPadding = MediaQuery.of(context).viewPadding.top / 2;
     double bottomPadding = MediaQuery.of(context).viewPadding.bottom / 2;
 
