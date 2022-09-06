@@ -69,7 +69,8 @@ class Home extends StatelessWidget {
                 onPressed: AppSettings.openWirelessSettings,
               );
             // If location permission is denied
-            if (snapshot.data == LocationPermission.deniedForever) {
+            if (snapshot.data == LocationPermission.denied ||
+                snapshot.data == LocationPermission.deniedForever) {
               // Remove splash screen
               FlutterNativeSplash.remove();
               return Error(

@@ -87,7 +87,7 @@ class _MarkerSheetState extends State<MarkerSheet> {
 
   @override
   Widget build(BuildContext context) {
-    double bottomPadding = MediaQuery.of(context).viewPadding.bottom / 2;
+    double bottomPadding = MediaQuery.of(context).viewPadding.bottom / 1.6;
 
     return Material(
       child: Padding(
@@ -174,7 +174,7 @@ class _MarkerSheetState extends State<MarkerSheet> {
               ],
             ),
             SizedBox(
-              height: 44,
+              height: 40,
             ),
             // Buttons
             Row(

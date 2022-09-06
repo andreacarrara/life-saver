@@ -14,15 +14,26 @@ class ThumbButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoButton(
+    return TextButton(
       onPressed: () => onPressed(isUp),
-      color: Colors.grey[200],
-      padding: EdgeInsets.zero,
+      style: ButtonStyle(
+        foregroundColor: MaterialStateProperty.all(Colors.black87),
+        overlayColor: MaterialStateProperty.all(Colors.transparent),
+        backgroundColor: MaterialStateProperty.all(Colors.grey[200]),
+        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        )),
+        padding: MaterialStateProperty.all(
+          EdgeInsets.symmetric(
+            vertical: 10,
+            horizontal: 24,
+          ),
+        ),
+      ),
       child: Icon(
         isUp
             ? CupertinoIcons.hand_thumbsup_fill
             : CupertinoIcons.hand_thumbsdown_fill,
-        color: Colors.black87,
       ),
     );
   }

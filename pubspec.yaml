@@ -39,6 +39,9 @@ dependencies:
 flutter_native_splash:
   color: '#fafafa'
   image: assets/icon/Icon-400.png
+  android_12:
+    color: '#fafafa'
+    image: assets/icon/Icon-200.png
 
 dev_dependencies:
   flutter_test:
@@ -46,14 +49,6 @@ dev_dependencies:
 
   # Linter
   flutter_lints: ^2.0.0
-  # Icon
-  flutter_launcher_icons: ^0.10.0
-
-# Icon
-flutter_icons:
-  ios: true
-  android: true
-  image_path: assets/icon/Icon-600.png
 
 flutter:
   uses-material-design: true

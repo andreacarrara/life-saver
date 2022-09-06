@@ -34,7 +34,7 @@ class AddSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double bottomPadding = MediaQuery.of(context).viewPadding.bottom / 2;
+    double bottomPadding = MediaQuery.of(context).viewPadding.bottom / 1.6;
 
     return Material(
       child: Padding(
@@ -108,7 +108,7 @@ class AddSheet extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 42,
+              height: 38,
             ),
             // Buttons
             Row(
