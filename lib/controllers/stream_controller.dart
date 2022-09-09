@@ -22,14 +22,14 @@ class StreamController {
     return geoflutterfire.collection(collectionRef: defibrillators).within(
           field: 'position',
           center: center,
-          radius: 20,
+          radius: 10,
         );
   }
 
   List<DocumentSnapshot> getDocuments(List<DocumentSnapshot> documents) {
     // Truncate number of documents
     int length = documents.length;
-    if (length > 20) documents.removeRange(20, length);
+    if (length > 10) documents.removeRange(20, length);
     // Sort documents by distance
     documents.sort((a, b) {
       GeoFirePoint center = GeoFirePoint(
