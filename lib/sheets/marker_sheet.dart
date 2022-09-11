@@ -87,152 +87,150 @@ class _MarkerSheetState extends State<MarkerSheet> {
 
   @override
   Widget build(BuildContext context) {
-    double bottomPadding = MediaQuery.of(context).viewPadding.bottom / 1.6;
+    double bottomPadding = MediaQuery.of(context).viewPadding.bottom / 1.5;
 
-    return Material(
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 24,
-          vertical: 14,
-        ),
-        child: Wrap(
-          children: [
-            // Knob
-            Center(
-              child: Container(
-                width: 28,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10),
-                ),
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: 24,
+        vertical: 14,
+      ),
+      child: Wrap(
+        children: [
+          // Knob
+          Center(
+            child: Container(
+              width: 28,
+              height: 6,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
-            // Location
-            Row(
-              children: [
-                Icon(
-                  CupertinoIcons.arrow_up_right_circle_fill,
-                  color: Colors.grey[400],
-                ),
-                SizedBox(
-                  width: 6,
-                ),
-                Text(
-                  'Location',
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
-                    color: Colors.grey[400],
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            // Address
-            Padding(
-              padding: EdgeInsets.only(
-                left: 6,
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          // Location
+          Row(
+            children: [
+              Icon(
+                CupertinoIcons.arrow_up_right_circle_fill,
+                color: Colors.grey[400],
               ),
-              child: Text(
-                _address,
+              SizedBox(
+                width: 6,
+              ),
+              Text(
+                'Location',
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.inter(
-                  fontSize: 18,
-                  color: Colors.black87,
+                  fontSize: 16,
+                  color: Colors.grey[400],
+                  fontWeight: FontWeight.bold,
                 ),
               ),
+            ],
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          // Address
+          Padding(
+            padding: EdgeInsets.only(
+              left: 6,
             ),
-            SizedBox(
-              height: 36,
+            child: Text(
+              _address,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(
+                fontSize: 18,
+                color: Colors.black87,
+              ),
             ),
-            // Reviews
-            Row(
-              children: [
-                Icon(
-                  CupertinoIcons.checkmark_circle_fill,
+          ),
+          SizedBox(
+            height: 36,
+          ),
+          // Reviews
+          Row(
+            children: [
+              Icon(
+                CupertinoIcons.checkmark_circle_fill,
+                color: Colors.grey[400],
+              ),
+              SizedBox(
+                width: 6,
+              ),
+              Text(
+                '$_reviews Review' + (_reviews == 1 ? '' : 's'),
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.inter(
+                  fontSize: 16,
                   color: Colors.grey[400],
+                  fontWeight: FontWeight.bold,
                 ),
-                SizedBox(
-                  width: 6,
-                ),
-                Text(
-                  '$_reviews Review' + (_reviews == 1 ? '' : 's'),
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
-                    color: Colors.grey[400],
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 40,
-            ),
-            // Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: Builder(
-                    builder: (context) {
-                      // If already reviewed
-                      if (_reviewed)
-                        // Reviewed
-                        return ActionButton(
-                          onPressed: () {},
-                          text: 'Reviewed',
-                          textColor: Colors.black87,
-                          backgroundColor: Colors.grey[200]!,
-                        );
-                      // Else, thumbs
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: ThumbButton(
-                              onPressed: _onThumbPressed,
-                              isUp: true,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 12,
-                          ),
-                          Expanded(
-                            child: ThumbButton(
-                              onPressed: _onThumbPressed,
-                              isUp: false,
-                            ),
-                          ),
-                        ],
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 40,
+          ),
+          // Buttons
+          Row(
+            children: [
+              Expanded(
+                child: Builder(
+                  builder: (context) {
+                    // If already reviewed
+                    if (_reviewed)
+                      // Reviewed
+                      return ActionButton(
+                        onPressed: () {},
+                        text: 'Reviewed',
+                        textColor: Colors.black87,
+                        backgroundColor: Colors.grey[200]!,
                       );
-                    },
-                  ),
+                    // Else, thumbs
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: ThumbButton(
+                            onPressed: _onThumbPressed,
+                            isUp: true,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          child: ThumbButton(
+                            onPressed: _onThumbPressed,
+                            isUp: false,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
-                SizedBox(
-                  width: 24,
+              ),
+              SizedBox(
+                width: 24,
+              ),
+              // Directions
+              Expanded(
+                child: ActionButton(
+                  onPressed: _showDirections,
+                  text: 'Directions',
+                  textColor: Colors.white,
+                  backgroundColor: Colors.black87,
                 ),
-                // Directions
-                Expanded(
-                  child: ActionButton(
-                    onPressed: _showDirections,
-                    text: 'Directions',
-                    textColor: Colors.white,
-                    backgroundColor: Colors.black87,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: bottomPadding + 46,
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: bottomPadding + 46,
+          ),
+        ],
       ),
     );
   }

@@ -39,9 +39,14 @@ class Map extends StatelessWidget {
       ),
     );
     // Open marker sheet
-    showCupertinoModalBottomSheet(
+    showMaterialModalBottomSheet(
       context: context,
-      topRadius: Radius.circular(10),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
+      ),
       builder: (context) => MarkerSheet(
         document: document,
       ),

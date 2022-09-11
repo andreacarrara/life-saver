@@ -160,8 +160,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
     );
     // Show add sheet
-    showCupertinoModalBottomSheet(
+    showMaterialModalBottomSheet(
       context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
+      ),
       builder: (context) => AddSheet(
         currentPosition: currentPosition,
       ),
@@ -172,9 +178,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     // If no closest marker
     if (_closestMarker == null) {
       // Show alert sheet
-      showCupertinoModalBottomSheet(
+      showMaterialModalBottomSheet(
         context: context,
-        topRadius: Radius.circular(10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
+          ),
+        ),
         builder: (context) => AlertSheet(),
       );
     } else {
@@ -187,9 +198,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       );
       // Show marker sheet
-      showCupertinoModalBottomSheet(
+      showMaterialModalBottomSheet(
         context: context,
-        topRadius: Radius.circular(10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
+          ),
+        ),
         builder: (context) => MarkerSheet(
           document: _closestMarker!,
         ),

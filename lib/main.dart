@@ -3,7 +3,6 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 // User interface
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 // Firebase Firestore
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -30,11 +29,8 @@ class LifeSaver extends StatelessWidget {
       theme: ThemeData(
         textTheme: GoogleFonts.interTextTheme(),
       ),
-      // Enable sheet animation
-      onGenerateRoute: (settings) => MaterialWithModalsPageRoute(
-        builder: (context) => Home(),
-      ),
       debugShowCheckedModeBanner: false,
+      home: Home(),
     );
   }
 }
