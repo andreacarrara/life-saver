@@ -98,7 +98,7 @@ class Map extends StatelessWidget {
           ),
           markers: markers,
           myLocationEnabled: true,
-          minMaxZoomPreference: MinMaxZoomPreference(8, null),
+          minMaxZoomPreference: MinMaxZoomPreference(10, null),
           myLocationButtonEnabled: false,
           rotateGesturesEnabled: false,
           zoomControlsEnabled: false,

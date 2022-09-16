@@ -27,9 +27,6 @@ class StreamController {
   }
 
   List<DocumentSnapshot> getDocuments(List<DocumentSnapshot> documents) {
-    // Truncate number of documents
-    int length = documents.length;
-    if (length > 10) documents.removeRange(20, length);
     // Sort documents by distance
     documents.sort((a, b) {
       GeoFirePoint center = GeoFirePoint(
@@ -41,7 +38,7 @@ class StreamController {
       return center
           .distance(
             lat: geoPointA.latitude,
-            lng: geoPointB.longitude,
+            lng: geoPointA.longitude,
           )
           .compareTo(
             center.distance(
@@ -50,6 +47,9 @@ class StreamController {
             ),
           );
     });
+    // Truncate number of documents
+    int length = documents.length;
+    if (length > 10) documents.removeRange(10, length);
     return documents;
   }
 }
