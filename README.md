@@ -1,6 +1,6 @@
 # Life Saver
 
-Flutter app that localizes nearby public defibrillators to help save lives.
+Flutter app that locates nearby public defibrillators to help save lives.
 Life Saver is freely available on both the [App Store](https://apps.apple.com/us/app/life-saver-aed-map/id1644552033) and the [Play Store](https://play.google.com/store/apps/details?id=dev.andreacarrara.life_saver).
 
 <p align="center">
